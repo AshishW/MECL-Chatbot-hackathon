@@ -32,3 +32,6 @@
 |   |-- index.html
 |-- readme.md
 ```
+
+## Setup Troubleshooting:
+If encountered any error for virtual environment setup on windows check [stackoverflow thread](https://stackoverflow.com/questions/67150436/cannot-be-loaded-because-running-scripts-is-disabled-on-this-system-for-more-in)
