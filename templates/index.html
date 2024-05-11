@@ -41,6 +41,8 @@
     const bottomOfChatbox = document.querySelector('.bottom-of-chatbox');
     let chatbotMode = "NGDR" //option "NGDR"/"RAG"
     const chatInput = document.querySelector('.query-input-txtbox');
+    let currentUserQuery = null;
+    let currentMapId = null;
     let enable_input = false
     let currentTopic = null;
     let plotId = 0;
@@ -102,16 +104,23 @@
       const loadingMessage = document.createElement('p');
       loadingMessage.innerText = message;
       loadingMessage.classList.add('bot-message')
+      loadingMessage.classList.add('loading-message')
       chatBox.appendChild(loadingMessage);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
-
+    
+    function removeLoader(){
+      const loadingMessage = document.querySelector('.loading-message');
+      if (loadingMessage) {
+        chatBox.removeChild(loadingMessage);
+      }
+    }
 
     const form = document.querySelector('form');
     form.addEventListener('submit', (event) => {
       event.preventDefault();
       const userQuery = document.querySelector('input[name="query"]').value;
-      
+      currentUserQuery = userQuery
       appendMessage(userQuery, true);
       document.querySelector('input[name="query"]').value = '';
       // add if else statement to make request to specific end point, ngdr or rag
@@ -127,7 +136,7 @@
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ query: userQuery})
+          body: JSON.stringify({ query: userQuery, threshold: 95})
         })
         .then(response => response.json())
         .then(data => { 
@@ -143,13 +152,12 @@
           if (data[1] === 'kriging_map'){ // check if the response is a krigging map
             // change the logic handle here to display the map
             map_data = data[0][0]
-            getMap(map_data)
+            getKrigingMap(map_data)
     
           }
           else if (data[1] === 'idw_map'){// check if the response is a idw map
             map_data = data[0][0]
-            getMap(map_data)
-
+            getIdwMap(map_data)
           }
 
           else if (data[1] === 'text'){ // if the response is not string from NGDR chatbot
@@ -196,17 +204,19 @@
         });
       }
     });
+  
+
 // OLD getMap function
-function getMap(map_data){
+function getKrigingMap(map_data){
   const mapContainer = document.createElement('div');
-  // const txtFieldThreshold = document.createElement('input');
-  // txtFieldThreshold.setAttribute("type", "text");
-  // txtFieldThreshold.placeholder = "Enter threshold value";
+
   mapContainer.innerHTML = map_data.map_html;
   mapContainer.classList.add('dynamic-map-container');
   mapContainer.id = `map-container-${plotId}`;
+  currentMapId = `map-container-${plotId}`; // Update the current map ID
   mapContainer.classList.add('bot-message');
-  // console.log(txtFieldThreshold)
+  
+
   appendMessage(mapContainer, false, isMap=true)
   // appendMessage(txtFieldThreshold, false, isMap=true)
   const config = {
@@ -223,6 +233,81 @@ function getMap(map_data){
   plotId += 1;
 }
 
+function getIdwMap(map_data){
+  const mapContainer = document.createElement('div');
+
+  const thresholdInput = document.createElement('input');
+  thresholdInput.setAttribute('type', 'number');
+  thresholdInput.setAttribute('min', '0');
+  thresholdInput.setAttribute('max', '100');
+  thresholdInput.setAttribute('placeholder', 'Enter threshold percentile');
+  thresholdInput.value = 95;
+  thresholdInput.classList.add('threshold-input');
+
+  mapContainer.innerHTML = map_data.map_html;
+  mapContainer.classList.add('dynamic-map-container');
+  mapContainer.id = `map-container-${plotId}`;
+  currentMapId = `map-container-${plotId}`; // Update the current map ID
+  mapContainer.classList.add('bot-message');
+  
+  const regenerateButton = document.createElement('button');
+  regenerateButton.innerText = 'Regenerate Map';
+  regenerateButton.classList.add('regenerate-button');
+  regenerateButton.addEventListener('click', () => {
+    const newThreshold = thresholdInput.value;
+    if(newThreshold < 0 || newThreshold > 100){
+      appendMessage("Please enter a valid threshold percentile between 0 and 100", false);
+      return;
+    }
+    // regenerateMap(plotId, newThreshold);
+    showLoader('Regenerating map...');
+    fetch('/get_response_ngdr', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ query: currentUserQuery, threshold: newThreshold})
+        }).then(response => response.json())
+        .then(data => {
+          removeLoader();
+          map_data = data[0][0]
+          const config = {
+            'toImageButtonOptions': {
+                'format': 'png', // one of png, svg, jpeg, webp
+                'filename': 'custom_image',
+                'height': 1080,
+                'width': 1920,
+                'scale': 1  
+              }
+          }
+    Plotly.newPlot(`${currentMapId}`, map_data.data, map_data.layout, config);
+  }).catch((error) => {
+    console.error('Error:', error);
+    appendMessage("something went wrong... please try again", false);
+  });
+  });
+  const thresholdMessage = document.createElement('p');
+  thresholdMessage.innerText = 'UPDATE THRESHOLD PERCENTILE';
+  const thresholdControlContainer = document.createElement('div');
+  thresholdControlContainer.appendChild(thresholdMessage);
+  thresholdControlContainer.appendChild(thresholdInput);
+  thresholdControlContainer.appendChild(regenerateButton);
+  appendMessage(mapContainer, false, isMap=true)
+  appendMessage(thresholdControlContainer, false, isMap=true, containsElements=true)
+  // appendMessage(txtFieldThreshold, false, isMap=true)
+  const config = {
+    'toImageButtonOptions': {
+        'format': 'png', // one of png, svg, jpeg, webp
+        'filename': 'custom_image',
+        'height': 1080,
+        'width': 1920,
+        'scale': 1  
+      }
+  } 
+  Plotly.newPlot(`map-container-${plotId}`, map_data.data, map_data.layout, config);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  plotId += 1;
+}
 
 // let currentMapId = null; // Store the ID of the currently displayed map
 
@@ -340,7 +425,7 @@ function suggestQuestions(topic, button_text){
   for (let i = 0; i < question_list.length; i++){
     message = message + "\n" + "🔸 " + question_list[i]
   }
-  appendMessage(message, false)
+  appendMessage(message, false);
 }
 
 

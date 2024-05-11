@@ -110,8 +110,8 @@ import plotly.graph_objects as go
 @app.route("/get_response_ngdr", methods=["POST"])
 def ngdr_geochem_response():
     user_query = request.json["query"]
-    # threshold = request.json["threshold"]
-    threshold = 95
+    threshold = int(request.json["threshold"])
+    # threshold = 95
     # send this user_query to the ngdr main function then get the response and return it by jsonify after making it to a dictionary
     
     response = generate_geochemistry_response(user_query, threshold) 

@@ -167,6 +167,44 @@ body {
 }
 
 
+/* adding threshold-input class as per the theme */
+.threshold-input {
+  background-color: #f0f4f9;
+  padding: 10px 20px;
+  border-radius: 15px;
+  border: none;
+  width: 40%;
+  text-align: center;
+  font-size: 14px;
+  background: #f7f0ed;
+  box-shadow:  5px 5px 10px #cfcac7,
+               -5px -5px 10px #f7f0ed;
+}
+
+.threshold-input:focus-visible{
+  outline: none;
+}
+
+/* adding regenerate-button class as per theme */
+.regenerate-button {
+  background-color: #ef2424; 
+  color: #fdeaff;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: 10px;
+  font-weight: bold;
+  font-size: 14px;
+  width: 50%;
+  border-radius: 10px;
+  /* background: #f7f0ed; */
+  box-shadow:  5px 5px 10px #cfcac7,
+               -5px -5px 10px #f7f0ed;
+}
+.regenerate-button:hover {
+  background-color: #ff7777;
+}
 /* Media Queries for Mobile Devices */
 @media only screen and (max-width: 600px) {
   .container {
