@@ -14,6 +14,7 @@ activating virtual environment:`.\.venv\Scripts\activate`
 
 ## Project Structure:
 
+```
 /MECL Chatbot/
 |-- app.py
 |-- geo_chem.py
@@ -28,3 +29,4 @@ activating virtual environment:`.\.venv\Scripts\activate`
 |-- templates/
 |   |-- index.html
 |-- readme.md
+```
