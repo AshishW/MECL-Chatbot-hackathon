@@ -473,13 +473,6 @@ def generate_idw_map(df, element, toposheet_number, threshold_percentile):
                 x=0.5, y=1.1, showarrow=False,
                 font=dict(size=14),
                 align="center"
-            ),
-            dict(
-                text=f"Anomaly Threshold: <b>{anomaly_threshold}</b>",
-                xref="paper", yref="paper",
-                x=0.5, y=1.4, showarrow=False,
-                font=dict(size=14),
-                align="center"
             )
         ]
         
