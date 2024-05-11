@@ -1,0 +1,377 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <div class="container">
+    <h2><span class="chatbot-title-heading">Pebble AI: </span><span class="chatbot-title-sub-heading">Explore. Discover. Analyze.</span></h2>
+    <div class="chat-box">
+      <div class="initial-greet-container">
+        <img src="{{ url_for('static', filename='bot.png') }}" class="profile-photo" style="margin-bottom:7rem ;">
+        <div class="sub_greet_container">
+          <p class="bot-message">
+            Hello and welcome! My name is Pebble, your dedicated AI assistant. I'm here to guide you through the intricacies of NGDR data & laws and regulations from the ministry of mines. What can I assist you with today?                                                                                              
+          </p>
+
+          <div class="topic-selection">
+            <button class="topic-button" data-topic="mines_and_minerals_act">Mines and Minerals(MMDR) Act 1957</button>
+            <button class="topic-button" data-topic="Mineral_auction_rules_2015">Mineral auction rules 2015</button>
+            <button class="topic-button" data-topic="Mines_and_minerals_evidence">Minerals (Evidence of Mineral Contents) Rules 2015</button>
+            <button class="topic-button" data-topic="ngdr_geochemistry">NGDR Geochemistry Repository</button>
+          </div>
+      </div>
+      </div>
+      <div class="bottom-of-chatbox"></div>
+    </div>
+    <div class="user-message-container">
+      <form class="user-message-input-form" method="POST" action="/get_response">
+        <input class="query-input-txtbox" type="text" name="query" placeholder="Type your message here..." required>
+        <button class="query-submit-button" type="submit">&#10147;</button>
+      </form>
+    </div>
+  </div>
+  <!-- <script src="{{ url_for('static', filename='chatbot_helper_functions.js') }}"></script> -->
+  <script>
+    const chatBox = document.querySelector('.chat-box');
+    const userMessageContainer = document.querySelector('.user-message-container');
+    const bottomOfChatbox = document.querySelector('.bottom-of-chatbox');
+    let chatbotMode = "NGDR" //option "NGDR"/"RAG"
+    const chatInput = document.querySelector('.query-input-txtbox');
+    let enable_input = false
+    let currentTopic = null;
+    let plotId = 0;
+
+    const MMDR_question_list = ["What is the Mines and Minerals Act 1957?", "What are the key provisions of the Mines and Minerals Act 1957?", "Section 25 in MMDR", "Why do we need MMDR act?", "What is the purpose of the District Mineral Foundation?", "What is the power of the Central Government to issue directions to the State Governments?", "What are the rights and liabilities of a holder of a prospecting license or mining lease under this Act?", "What are the powers of entry and inspection granted to the Central Government and the State Governments under this Act?", "What are the different types of mineral concessions mentioned in the Act?"]
+    const Auction_rules_question_list = ["What are the Mineral Auction Rules 2015?", 
+                    "What are the key provisions of the Mineral Auction Rules 2015?",
+                    "What are the payment terms for a successful bidder in a mining lease auction?", 
+                    "Explain the process of granting a Composite Licence.", 
+                    "What are the eligibility criteria for an applicant to be eligible for a Composite License with respect to an area within the State?",
+                    "What are the minimum and maximum area requirements for a Composite License grant?",
+                    "What are the indicative end uses for which the application can be submitted?",
+                    "What is the process for determining the technically qualified bidders in the first round of auction?",
+                    "How does the final price offer differ from the initial price offer in the second round of auction?",
+                    "What are the legal implications and risk factors associated with the grant of a Composite License?"]
+    const Evidence_rules_question_list = ["What are the Minerals (Evidence of Mineral Contents) Rules 2015?",  "To which minerals do these rules apply?", "What are the different stages of mineral exploration defined in the rules?", "Explain reporting Mineral Resources.",]
+    const NGDR_question_list = ["Create a kriging map for copper for the toposheet number 55K14", "Create a IDW map for al2o3 for the toposheet number 55P10","Tell me the maximum value for cu in the toposheet number 55K14", "what is the max and min values for the concentrations of hg in toposheet number 55P02?"]
+    if (!enable_input){
+      chatInput.disabled = true
+      chatInput.placeholder = "Select a topic to continue conversation..."
+      //set chatinput background as grey
+      chatInput.style.backgroundColor = "#f2f2f2"
+    }
+    // add logic such that the input is activated only when the button is clicked
+    function appendMessage(message, isUser, isMap = false, containsElements = false) {
+      const messageElement = document.createElement('p');
+      const profilePhoto = document.createElement('img');
+      profilePhoto.classList.add('profile-photo');
+      if(isUser){
+        profilePhoto.src = "{{ url_for('static', filename='user.png') }}";
+        messageElement.classList.add('user-message');
+      }
+      else{
+        profilePhoto.src = "{{ url_for('static', filename='bot.png') }}";
+        messageElement.classList.add('bot-message');
+      }
+  
+      messageElement.classList.add(isUser ? 'user-message' : 'bot-message');
+      if (isMap){
+        messageElement.id = `map-container-${plotId}`;
+      }
+      else{
+        messageElement.innerText = message;
+      }
+      if (containsElements){
+        console.log(message)
+        messageElement.appendChild(message)
+      }
+      const messageContainer = document.createElement('div');
+      messageContainer.classList.add('message-container');
+      messageContainer.appendChild(profilePhoto);
+      messageContainer.appendChild(messageElement);
+      // instead of inserting before the initial greet container, insert after the last message container
+      chatBox.insertBefore(messageContainer, bottomOfChatbox);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+    
+    function showLoader(message){
+      const loadingMessage = document.createElement('p');
+      loadingMessage.innerText = message;
+      loadingMessage.classList.add('bot-message')
+      chatBox.appendChild(loadingMessage);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+
+    const form = document.querySelector('form');
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const userQuery = document.querySelector('input[name="query"]').value;
+      
+      appendMessage(userQuery, true);
+      document.querySelector('input[name="query"]').value = '';
+      // add if else statement to make request to specific end point, ngdr or rag
+      if(chatbotMode === "NGDR"){
+        const loadingMessage = document.createElement('p');
+        loadingMessage.innerText = 'Processing your request...';
+        loadingMessage.classList.add('bot-message')
+        loadingMessage.classList.add('loading-message')
+        chatBox.appendChild(loadingMessage);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        fetch('/get_response_ngdr', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ query: userQuery})
+        })
+        .then(response => response.json())
+        .then(data => { 
+          console.log(data)
+          chatBox.removeChild(loadingMessage);
+          
+          // if (data[1] === 'kriging_map' || data[1] === 'idw_map'){ // check if the response is a krigging map
+          //   // change the logic handle here to display the map
+          //   map_data = data[0][0]
+          //   getMap(map_data)
+    
+          // }
+          if (data[1] === 'kriging_map'){ // check if the response is a krigging map
+            // change the logic handle here to display the map
+            map_data = data[0][0]
+            getMap(map_data)
+    
+          }
+          else if (data[1] === 'idw_map'){// check if the response is a idw map
+            map_data = data[0][0]
+            getMap(map_data)
+
+          }
+
+          else if (data[1] === 'text'){ // if the response is not string from NGDR chatbot
+              message = data[0] 
+              appendMessage(message, false);
+            }
+          // document.querySelector('input[name="query"]').value = '';
+        }).catch((error) => {
+          console.error('Error:', error);
+          appendMessage("something went wrong... please try again", false);
+        });
+        // getMap(currentTopic, userQuery)
+        // document.querySelector('input[name="query"]').value = '';
+      }
+      else{ //if chatbotMode is RAG
+        const loadingMessage = document.createElement('p');
+        loadingMessage.innerText = 'Pebble is Typing...';
+        loadingMessage.classList.add('bot-message')
+        loadingMessage.classList.add('loading-message')
+        chatBox.appendChild(loadingMessage);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        fetch('/get_response_rag', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ query: userQuery,  topic: currentTopic })
+        })
+        .then(response => response.json())
+        .then(data => {
+          chatBox.removeChild(loadingMessage);
+          if (data.response === 'There was an error connecting to the chatbot. Please try again later.'){
+            appendMessage(data.response + "\n \n [NOTE]: 📙 This chatbot UI is for demo purpose, perhaps the server isn't runnning. Please try again later or contact the maintainer of the code repository.", false)
+          }
+          else{ 
+            appendMessage(data.response, false);
+          }
+          document.querySelector('input[name="query"]').value = '';
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          appendMessage("📶 Looks like something went wrong. please try again later.")
+          chatBox.removeChild(loadingMessage)
+        });
+      }
+    });
+// OLD getMap function
+function getMap(map_data){
+  const mapContainer = document.createElement('div');
+  // const txtFieldThreshold = document.createElement('input');
+  // txtFieldThreshold.setAttribute("type", "text");
+  // txtFieldThreshold.placeholder = "Enter threshold value";
+  mapContainer.innerHTML = map_data.map_html;
+  mapContainer.classList.add('dynamic-map-container');
+  mapContainer.id = `map-container-${plotId}`;
+  mapContainer.classList.add('bot-message');
+  // console.log(txtFieldThreshold)
+  appendMessage(mapContainer, false, isMap=true)
+  // appendMessage(txtFieldThreshold, false, isMap=true)
+  const config = {
+    'toImageButtonOptions': {
+        'format': 'png', // one of png, svg, jpeg, webp
+        'filename': 'custom_image',
+        'height': 1080,
+        'width': 1920,
+        'scale': 1  
+      }
+  } 
+  Plotly.newPlot(`map-container-${plotId}`, map_data.data, map_data.layout, config);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  plotId += 1;
+}
+
+
+// let currentMapId = null; // Store the ID of the currently displayed map
+
+// function getMap(map_data) {
+//   const mapContainer = document.createElement('div');
+//   mapContainer.innerHTML = map_data.map_html;
+//   mapContainer.classList.add('dynamic-map-container');
+//   const mapId = `map-container-${plotId}`;
+//   mapContainer.id = mapId;
+//   currentMapId = mapId; // Update the current map ID
+
+//   const thresholdInput = document.createElement('input');
+//   thresholdInput.setAttribute('type', 'number');
+//   thresholdInput.setAttribute('min', '0');
+//   thresholdInput.setAttribute('max', '100');
+//   thresholdInput.setAttribute('placeholder', 'Enter threshold percentile');
+//   thresholdInput.classList.add('threshold-input');
+
+//   const regenerateButton = document.createElement('button');
+//   regenerateButton.innerText = 'Regenerate Map';
+//   regenerateButton.classList.add('regenerate-button');
+//   regenerateButton.addEventListener('click', () => {
+//     const newThreshold = thresholdInput.value;
+//     regenerateMap(mapId, newThreshold); 
+//   });
+
+//   const controlsContainer = document.createElement('div');
+//   controlsContainer.classList.add('map-controls');
+//   controlsContainer.appendChild(thresholdInput);
+//   controlsContainer.appendChild(regenerateButton);
+
+//   const messageContainer = document.createElement('div');
+//   messageContainer.classList.add('message-container');
+//   messageContainer.classList.add('bot-message'); // Add bot-message class
+//   messageContainer.appendChild(mapContainer);
+
+//   if (map_data.map_type === 'idw_map') { // Only add controls for IDW maps
+//     messageContainer.appendChild(controlsContainer);
+//   }
+
+//   chatBox.insertBefore(messageContainer, bottomOfChatbox);
+  
+//   const config = { 
+//     'toImageButtonOptions': {
+//       'format': 'png',
+//       'filename': 'custom_image',
+//       'height': 1080,
+//       'width': 1920,
+//       'scale': 1
+//     }
+//   };
+//   Plotly.newPlot(mapId, map_data.data, map_data.layout, config);
+//   chatBox.scrollTop = chatBox.scrollHeight;
+//   plotId += 1;
+// }
+
+// function regenerateMap(mapId, threshold) {
+//   showLoader('Regenerating map...');
+
+//   fetch('/regenerate_idw', {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json'
+//     },
+//     body: JSON.stringify({ threshold: threshold, current_map_id: mapId  }) // Include threshold
+//   })
+//   .then(response => response.json())
+//   .then(data => {
+//     // Replace the existing map with the new one
+//     const mapContainer = document.getElementById(currentMapId);
+//     mapContainer.innerHTML = data.map_html;
+//     Plotly.react(currentMapId, data.data, data.layout); 
+//     chatBox.scrollTop = chatBox.scrollHeight;
+//   })
+//   .catch(error => {
+//     console.error('Error:', error);
+//     appendMessage("Something went wrong... please try again", false);
+//   })
+//   .finally(() => {
+//     // Remove the loader
+//     const loadingMessage = document.querySelector('.loading-message');
+//     if (loadingMessage) {
+//       chatBox.removeChild(loadingMessage);
+//     }
+//   });
+// }
+
+
+
+
+
+// a function that will clear all the chat and  append a bot message when topic is selected and suggest some example questions to ask depending on the selected topic:
+function suggestQuestions(topic, button_text){
+  // clear all the chat
+  const chatMessages = document.querySelectorAll('.message-container');
+  chatMessages.forEach(message => {
+    if (message !== userMessageContainer){
+      chatBox.removeChild(message);
+    }
+  });
+  let message = "Great! You have selected the topic '" + button_text + "'. \n\nHere are some example questions you may ask: "
+  let question_list = []
+  if (topic === 'mines_and_minerals_act'){
+    question_list = MMDR_question_list
+  }
+  else if (topic === 'Mineral_auction_rules_2015'){
+    question_list = Auction_rules_question_list
+  }
+  else if (topic === 'Mines_and_minerals_evidence'){
+    question_list = Evidence_rules_question_list
+  }
+  else if (topic === 'ngdr_geochemistry'){
+    question_list = NGDR_question_list
+  }
+  for (let i = 0; i < question_list.length; i++){
+    message = message + "\n" + "🔸 " + question_list[i]
+  }
+  appendMessage(message, false)
+}
+
+
+// Add event listeners to topic buttons
+const topicButtons = document.querySelectorAll('.topic-button');
+topicButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    for (let i = 0; i < topicButtons.length; i++) {
+      if (topicButtons[i] !== button) {
+        topicButtons[i].classList.remove('selected-btn');
+      }
+    }
+    console.log(button.dataset.topic)
+    button.classList.add('selected-btn')
+    enable_input = true //sets the user input to be enabled
+    if (enable_input){
+      chatInput.disabled = false
+      chatInput.placeholder = "Type your message here..."
+      chatInput.style.backgroundColor = "#ffffff"
+    }
+    currentTopic = button.dataset.topic;
+    suggestQuestions(currentTopic, button.textContent)
+    if (currentTopic === 'ngdr_geochemistry') {
+      chatbotMode = "NGDR"
+    }
+    else {
+      chatbotMode = "RAG"
+    }
+  });
+});
+
+  </script>
+</body>
+</html>
