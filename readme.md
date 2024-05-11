@@ -1,7 +1,7 @@
 ## Steps for setting up the flask application:
 
 1. clone the repository or download the zip
-2. cd into MECL Chatbot
+2. cd into repository folder MECL-Chatbot-hackathon
 3. Create a virtual environment as per the [Flask documentation](https://flask.palletsprojects.com/en/3.0.x/installation/#create-an-environment).
 4. Activate the virtual environment as per the [Flask documentation](https://flask.palletsprojects.com/en/3.0.x/installation/#activate-the-environment) depending on your Operating System.
 
