@@ -255,7 +255,7 @@ function getIdwMap(map_data){
   regenerateButton.classList.add('regenerate-button');
   regenerateButton.addEventListener('click', () => {
     const newThreshold = thresholdInput.value;
-    if(newThreshold < 0 || newThreshold > 100){
+    if(newThreshold < 0 || newThreshold > 100  || newThreshold === ''){
       appendMessage("Please enter a valid threshold percentile between 0 and 100", false);
       return;
     }
@@ -308,94 +308,6 @@ function getIdwMap(map_data){
   chatBox.scrollTop = chatBox.scrollHeight;
   plotId += 1;
 }
-
-// let currentMapId = null; // Store the ID of the currently displayed map
-
-// function getMap(map_data) {
-//   const mapContainer = document.createElement('div');
-//   mapContainer.innerHTML = map_data.map_html;
-//   mapContainer.classList.add('dynamic-map-container');
-//   const mapId = `map-container-${plotId}`;
-//   mapContainer.id = mapId;
-//   currentMapId = mapId; // Update the current map ID
-
-//   const thresholdInput = document.createElement('input');
-//   thresholdInput.setAttribute('type', 'number');
-//   thresholdInput.setAttribute('min', '0');
-//   thresholdInput.setAttribute('max', '100');
-//   thresholdInput.setAttribute('placeholder', 'Enter threshold percentile');
-//   thresholdInput.classList.add('threshold-input');
-
-//   const regenerateButton = document.createElement('button');
-//   regenerateButton.innerText = 'Regenerate Map';
-//   regenerateButton.classList.add('regenerate-button');
-//   regenerateButton.addEventListener('click', () => {
-//     const newThreshold = thresholdInput.value;
-//     regenerateMap(mapId, newThreshold); 
-//   });
-
-//   const controlsContainer = document.createElement('div');
-//   controlsContainer.classList.add('map-controls');
-//   controlsContainer.appendChild(thresholdInput);
-//   controlsContainer.appendChild(regenerateButton);
-
-//   const messageContainer = document.createElement('div');
-//   messageContainer.classList.add('message-container');
-//   messageContainer.classList.add('bot-message'); // Add bot-message class
-//   messageContainer.appendChild(mapContainer);
-
-//   if (map_data.map_type === 'idw_map') { // Only add controls for IDW maps
-//     messageContainer.appendChild(controlsContainer);
-//   }
-
-//   chatBox.insertBefore(messageContainer, bottomOfChatbox);
-  
-//   const config = { 
-//     'toImageButtonOptions': {
-//       'format': 'png',
-//       'filename': 'custom_image',
-//       'height': 1080,
-//       'width': 1920,
-//       'scale': 1
-//     }
-//   };
-//   Plotly.newPlot(mapId, map_data.data, map_data.layout, config);
-//   chatBox.scrollTop = chatBox.scrollHeight;
-//   plotId += 1;
-// }
-
-// function regenerateMap(mapId, threshold) {
-//   showLoader('Regenerating map...');
-
-//   fetch('/regenerate_idw', {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json'
-//     },
-//     body: JSON.stringify({ threshold: threshold, current_map_id: mapId  }) // Include threshold
-//   })
-//   .then(response => response.json())
-//   .then(data => {
-//     // Replace the existing map with the new one
-//     const mapContainer = document.getElementById(currentMapId);
-//     mapContainer.innerHTML = data.map_html;
-//     Plotly.react(currentMapId, data.data, data.layout); 
-//     chatBox.scrollTop = chatBox.scrollHeight;
-//   })
-//   .catch(error => {
-//     console.error('Error:', error);
-//     appendMessage("Something went wrong... please try again", false);
-//   })
-//   .finally(() => {
-//     // Remove the loader
-//     const loadingMessage = document.querySelector('.loading-message');
-//     if (loadingMessage) {
-//       chatBox.removeChild(loadingMessage);
-//     }
-//   });
-// }
-
-
 
 
 

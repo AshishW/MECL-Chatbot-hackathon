@@ -203,7 +203,7 @@ body {
                -5px -5px 10px #f7f0ed;
 }
 .regenerate-button:hover {
-  background-color: #ff7777;
+  background-color: #bb3333;
 }
 /* Media Queries for Mobile Devices */
 @media only screen and (max-width: 600px) {
