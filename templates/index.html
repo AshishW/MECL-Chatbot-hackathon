@@ -256,7 +256,8 @@ function getIdwMap(map_data){
   regenerateButton.addEventListener('click', () => {
     const newThreshold = thresholdInput.value;
     if(newThreshold < 0 || newThreshold > 100  || newThreshold === ''){
-      appendMessage("Please enter a valid threshold percentile between 0 and 100", false);
+      // appendMessage("Please enter a valid threshold percentile between 0 and 100", false);
+      alert("Please enter a valid threshold percentile between 0 and 100")
       return;
     }
     // regenerateMap(plotId, newThreshold);

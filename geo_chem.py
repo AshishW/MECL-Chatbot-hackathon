@@ -404,202 +404,6 @@ def create_idw_map_from_query(query,df,toposheet_numbers,elements, threshold_per
         for element in elements:
             return generate_idw_map(df, element, toposheet_number, threshold_percentile)
 
-
-
-
-# def generate_idw_map(df, element,max_value, max_location, max_lat, max_lon, min_value, min_location, min_lat, min_lon, toposheet_number, threshold_percentile):
-#     # Filter the DataFrame by the specified toposheet number
-#     gdf = df[df['toposheet'] == toposheet_number]
-
-#     # Step 1: Determine Baseline
-#     baseline = np.median(gdf[element])  # Using median as the baseline
-
-#     # Step 2: Calculate Deviation
-#     deviation = gdf[element] - baseline
-
-#     # Step 3: Statistical Analysis
-#     std_dev = np.std(deviation)
-#     percentile_value = np.percentile(deviation, threshold_percentile)
-
-#     # Step 4: Define Anomaly Threshold
-#     anomaly_threshold = percentile_value  # Setting the specified percentile as the threshold
-
-#     # Step 5: Identify Anomalies
-#     anomalies = gdf[deviation > anomaly_threshold]
-
-#     # Step 6: Anomaly Map
-#     # Create grid coordinates for interpolation
-#     grid_x, grid_y = np.mgrid[min(gdf['longitude']):max(gdf['longitude']):100j, min(gdf['latitude']):max(gdf['latitude']):100j]
-
-#     # Interpolate using IDW
-#     grid_z = griddata((gdf['longitude'], gdf['latitude']), deviation, (grid_x, grid_y), method='cubic')
-
-#     # Plotting the IDW map
-#     plt.figure(figsize=(10, 8))
-#     plt.imshow(grid_z.T, extent=(min(gdf['longitude']), max(gdf['longitude']), min(gdf['latitude']), max(gdf['latitude'])), origin='lower')
-#     plt.scatter(anomalies['longitude'], anomalies['latitude'], c='red')  # Anomalies marked in red
-#     plt.colorbar(label='Deviation from Baseline')
-#     plt.title(f'Geochemical IDW Map for {element} (Toposheet {toposheet_number})\n\nMaximum value (in ppm): {max_value} at longitude {max_lat} and latitude {max_lat}\nMinimum value (in ppm): {min_value} at longitude {min_lat} and latitude {min_lat}')
-
-#     plt.xlabel('Longitude')
-#     plt.ylabel('Latitude')
-    
-  
-#     buffer = io.BytesIO()
-#     plt.savefig(buffer, format='png')  # Save the plot to the buffer in PNG format
-#     buffer.seek(0)
-#     image_data = base64.b64encode(buffer.read()).decode('utf-8')  # Convert the image buffer to base64 string
-#     output = {"image_data": image_data}
-#     plt.close()  # Close the plot to prevent it from being displayed or printed
-    
-#     return output  # Return the base64 encoded image data as a dictionary
-
-# OLD IDW CODE 
-# def generate_idw_map(df, element, max_value, max_location, max_lat, max_lon, min_value, min_location, min_lat, min_lon, toposheet_number, threshold_percentile):
-#     # Filter the DataFrame by the specified toposheet number
-#     gdf = df[df['toposheet'] == toposheet_number]
-
-#     # Determine Baseline
-#     baseline = np.median(gdf[element])
-
-#     # Calculate Deviation
-#     deviation = gdf[element] - baseline
-
-#     # Statistical Analysis
-#     std_dev = np.std(deviation)
-#     percentile_value = np.percentile(deviation, threshold_percentile)
-
-#     # Define Anomaly Threshold
-#     anomaly_threshold = percentile_value
-
-#     # Identify Anomalies
-#     anomalies = gdf[deviation > anomaly_threshold]
-
-#     # Create grid coordinates for interpolation
-#     grid_x, grid_y = np.mgrid[min(gdf['longitude']):max(gdf['longitude']):100j, min(gdf['latitude']):max(gdf['latitude']):100j]
-
-#     # Interpolate using IDW
-#     grid_z = griddata((gdf['longitude'], gdf['latitude']), deviation, (grid_x, grid_y), method='cubic')
-
-#     # Create the contour plot
-#     contour = go.Contour(
-#         z=grid_z.T,
-#         x=np.linspace(min(gdf['longitude']), max(gdf['longitude']), 100),
-#         y=np.linspace(min(gdf['latitude']), max(gdf['latitude']), 100),
-#         colorscale='Viridis',
-#         colorbar=dict(title='Deviation from Baseline')
-#     )
-
-#     # Create the scatter plot for anomalies
-#     scatter = go.Scatter(
-#         x=anomalies['longitude'],
-#         y=anomalies['latitude'],
-#         mode='markers',
-#         marker=dict(color='red', size=5),
-#         name='Anomalies'
-#     )
-
-#     # Define the layout
-#     layout = go.Layout(
-#         title=f'Geochemical IDW Map for {element} (Toposheet {toposheet_number})<br>'
-#               f'Maximum value (in ppm): {max_value} at longitude {max_lon} and latitude {max_lat}<br>'
-#               f'Minimum value (in ppm): {min_value} at longitude {min_lon} and latitude {min_lat}',
-#         xaxis=dict(title='Longitude'),
-#         yaxis=dict(title='Latitude')
-#     )
-    
-#     # Create the figure and plot it
-#     fig = go.Figure(data=[contour, scatter], layout=layout)
-#     data = fig.to_dict()
-#     layout = fig.to_dict()
-#     return (data, layout, 'idw_map')
-
-#NEW OLD IDW CODE - EXP:
-# def generate_idw_map(df, element, toposheet_number, threshold_percentile):
-#     # Filter the DataFrame by the specified toposheet number
-#     gdf = df[df['toposheet'] == toposheet_number]
-#     if (gdf[element] == 0.00).all():
-#         return 'Data for the requested toposheet number is not available or updated. Please stay tuned for updates!'
-#     else:
-#         # Determine Baseline
-#         baseline = np.median(gdf[element])
-
-#         # Calculate Deviation
-#         deviation = gdf[element] - baseline
-
-#         # Statistical Analysis
-#         std_dev = np.std(deviation)
-#         percentile_value = np.percentile(deviation, threshold_percentile)
-
-#         # Define Anomaly Threshold
-#         anomaly_threshold = percentile_value
-
-#         # Identify Anomalies
-#         anomalies = gdf[deviation > anomaly_threshold]
-#         max_value = gdf[element].max()
-#         max_location = gdf[gdf[element] == max_value][['latitude', 'longitude']].iloc[0]
-#         max_lat, max_lon = max_location['latitude'], max_location['longitude']
-#         # Minimum value aur uske corresponding latitude, longitude find kar rahe hain
-#         min_value = gdf[element].min()
-#         min_location = gdf[gdf[element] == min_value][['latitude', 'longitude']].iloc[0]
-#         min_lat, min_lon = min_location['latitude'], min_location['longitude']
-
-#         # Create grid coordinates for interpolation
-#         grid_x, grid_y = np.mgrid[min(gdf['longitude']):max(gdf['longitude']):100j, min(gdf['latitude']):max(gdf['latitude']):100j]
-
-#         # Interpolate using IDW
-#         grid_z = griddata((gdf['longitude'], gdf['latitude']), deviation, (grid_x, grid_y), method='cubic')
-
-#         # Create the contour plot
-#         contour = go.Contour(
-#             z=grid_z.T,
-#             x=np.linspace(min(gdf['longitude']), max(gdf['longitude']), 100),
-#             y=np.linspace(min(gdf['latitude']), max(gdf['latitude']), 100),
-#             colorscale='Viridis',
-#             colorbar=dict(title='Deviation from Baseline')
-#         )
-
-#         # Create the scatter plot for anomalies
-#         scatter = go.Scatter(
-#             x=anomalies['longitude'],
-#             y=anomalies['latitude'],
-#             mode='markers',
-#             marker=dict(color='red', size=5),
-#             name='Anomalies'
-#         )        
-
-#         # Add annotations for maximum and minimum values
-#         annotations = [
-#             dict(
-#                 text=f"<i>Maximum value (in ppm): <b>{max_value}</b> at longitude <b>{max_lon}</b> and latitude <b>{max_lat}</b></i>",
-#                 xref="paper", yref="paper",
-#                 x=0.5, y=1.2, showarrow=False,
-#                 font=dict(size=14),
-#                 align="center"
-#             ),
-#             dict(
-#                 text=f"<i>Minimum value (in ppm): <b>{min_value}</b> at longitude <b>{min_lon}</b> and latitude <b>{min_lat}</b></i>",
-#                 xref="paper", yref="paper",
-#                 x=0.5, y=1.1, showarrow=False,
-#                 font=dict(size=14),
-#                 align="center"
-#             )
-#         ]
-        
-#         # Define the layout with annotations
-#         layout = go.Layout(
-#             annotations=annotations,
-#             title=f"<b>Stream Sediment samples showing {element} Values(ppm)</b>",
-#             title_x=0.5,
-#             title_y=0.95,
-#             margin=dict(t=120) 
-#         )
-
-#         # Create the figure and plot it
-#         fig = go.Figure(data=[contour, scatter], layout=layout)
-#         data = fig.to_dict()
-#         layout = fig.to_dict()
-#         return (data, layout, 'idw_map')
         
 def generate_idw_map(df, element, toposheet_number, threshold_percentile):
     # Filter the DataFrame by the specified toposheet number
@@ -669,6 +473,13 @@ def generate_idw_map(df, element, toposheet_number, threshold_percentile):
                 x=0.5, y=1.1, showarrow=False,
                 font=dict(size=14),
                 align="center"
+            ),
+            dict(
+                text=f"Anomaly Threshold: <b>{anomaly_threshold}</b>",
+                xref="paper", yref="paper",
+                x=0.5, y=1.4, showarrow=False,
+                font=dict(size=14),
+                align="center"
             )
         ]
         
@@ -687,19 +498,6 @@ def generate_idw_map(df, element, toposheet_number, threshold_percentile):
         data = fig.to_dict()
         layout = fig.to_dict()
         return (data, layout, 'idw_map')
-# generate_idw_map(df, 'element_name', toposheet_number, threshold_percentile)
-
-# OLD find_max_values
-# def find_max_values(query, df):
-#     toposheet_numbers = extract_topo_no(query)
-#     elements = extract_chemicals(query)
-#     for toposheet_number in toposheet_numbers:
-#         for element in elements:
-#             max_value = df[element].max()
-#             max_location = df[df[element] == max_value][['latitude', 'longitude']].iloc[0]
-#             max_lat, max_lon = max_location['latitude'], max_location['longitude']
-#             max_value_result = f"For the toposheet {toposheet_number}, the element {element} has maximum PPM value {max_value} at latitude {max_lat} and longitude {max_lon}."
-#             return max_value_result
 
 def find_max_values(query, df,toposheet_numbers,elements):
     for toposheet_number in toposheet_numbers:
@@ -710,42 +508,6 @@ def find_max_values(query, df,toposheet_numbers,elements):
             max_value_result = f"For the toposheet {toposheet_number}, the element {element} has maximum PPM value {max_value} at latitude {max_lat} and longitude {max_lon}."
             return max_value_result
 
-
-#  OLD find_min_values
-# def find_min_values(query, df):
-# #     print("[INFO:] Finding the min values")
-#     toposheet_numbers = extract_topo_no(query)
-#     elements = extract_chemicals(query)
-#     for toposheet_number in toposheet_numbers:
-#         for element in elements:
-#             min_value = df[element].min()
-#             min_location = df[df[element] == min_value][['latitude', 'longitude']].iloc[0]
-#             min_lat, min_lon = min_location['latitude'], min_location['longitude']
-    
-#             # Results ko sentence mein display kar rahe hain
-#             min_value_result = f"For the toposheet {toposheet_number}, the element {element} has minimum PPM value {min_value} at latitude {min_lat} and longitude {min_lon}."
-#             return min_value_result
-
-
-
-
-# OLD find_bot_min_max
-# def find_both_min_max(query, df):
-#     toposheet_numbers = extract_topo_no(query)
-#     elements = extract_chemicals(query)
-#     for toposheet_number in toposheet_numbers:
-#         for element in elements:
-#             max_value = df[element].max()
-#             max_location = df[df[element] == max_value][['latitude', 'longitude']].iloc[0]
-#             max_lat, max_lon = max_location['latitude'], max_location['longitude']
-#             # Minimum value aur uske corresponding latitude, longitude find kar rahe hain
-#             min_value = df[element].min()
-#             min_location = df[df[element] == min_value][['latitude', 'longitude']].iloc[0]
-#             min_lat, min_lon = min_location['latitude'], min_location['longitude']
-
-#             # Results ko sentence mein display kar rahe hain
-#             min_max_value_result = f"For the toposheet {toposheet_number}, the element {element} has maximum PPM value {max_value} at latitude {max_lat} and longitude {max_lon}, and has minimum PPM value {min_value} at latitude {min_lat} and longitude {min_lon}."
-#             return min_max_value_result
 
 
 def find_min_values(query, df,toposheet_numbers,elements):
@@ -759,8 +521,6 @@ def find_min_values(query, df,toposheet_numbers,elements):
             min_value_result = f"For the toposheet {toposheet_number}, the element {element} has minimum PPM value {min_value} at latitude {min_lat} and longitude {min_lon}."
 #             min_ppm_results.append(min_value_result)
             return min_value_result
-
-
 
 
 
@@ -831,83 +591,6 @@ def find_both_min_max(query, df,toposheet_numbers,elements):
     return subqueries
 
 
-# OLD process_subqueries
-# def process_subqueries(subqueries):
-# #     combined_output = []  # Initialize a list to store combined output
-#     df = Nagpur_gdf
-#     try: 
-#         for subquery in subqueries:
-#             print(f"Processing subquery: {subquery}")
-#             if ('maximum' in subquery.lower() and 'minimum' in subquery.lower()) or ('max' in subquery.lower() and 'min' in subquery.lower()):
-#                 print("Calling the function for min and max")
-#                 output = find_both_min_max(subquery, df=Nagpur_gdf) 
-#             elif ('maximum' in subquery.lower()) or ('max' in subquery.lower()):
-#                 print('Calling Max Fun')
-#                 output = find_max_values(subquery,df)
-#             elif ('minimum' in subquery.lower()) or ('min' in subquery.lower()):
-#                 print('Calling Min Fun')
-#                 output = find_min_values(subquery,df)      
-                
-#             # Check if the subquery mentions 'idw interpolation map'
-#             elif 'idw' in subquery.lower() or 'inverse distance weighted map' in subquery.lower():
-#                 print("Calling the IDW function")
-#                 output = create_idw_map_from_query(subquery, df)           
-                
-#             elif 'idw' in subquery.lower() and "kriging" in subquery.lower():
-#                 print("Calling both kriging and IDW function")
-#                 output_idw = create_idw_map_from_query(subquery, df)
-#                 output_kriging = create_kriging_map_from_query(subquery, df)
-#                 output = (output_idw, output_kriging)  # Store both outputs in a tuple
-                
-#             elif 'kriging' in subquery.lower():
-#                 print("Calling the kriging function")
-#                 output = create_kriging_map_from_query(subquery, df)
-#             else:
-#                 apology_message = "I'm only able to provide information related to Nagpur data. Please enter a valid query about Nagpur toposheet data. Thank you for your understanding and patience."
-#                 print(apology_message)
-#         return output 
-#     except Exception as e:
-#         print("Error:", e)
-#         return "There was problem processing your query, please try again and make sure the query is valid on Nagpur toposheet data. Thank you for your understanding and patience."
-
-
-# def process_subqueries(query):
-#     query = re.sub(r'\b(?:can|could|will|would|shall|should|may|might|must|to)\s+be\b', 'exists', query, flags=re.IGNORECASE)
-#     if 'kriging' in query.lower() and 'idw' in query.lower():
-#         return('''I apologize for any inconvenience; I can generate only one map at a time.
-#                You might ask, for example, 'Create a kriging/IDW map for copper for toposheet number 55P10'.''')
-#     else:
-#         word_list = ["kriging", "idw", "max", "min","maximum","minimum"]
-#         max_found = False
-#         min_found = False
-#         both_max_min_found = False
-#         df = Nagpur_gdf
-#         toposheet_numbers = extract_topo_no(query)
-#         elements = extract_elements(query)
-
-#         print(toposheet_numbers,'\n')
-#         print(elements)
-#         if (len(toposheet_numbers) > 1) or (len(elements) > 1):
-#             return 'Apologies for any inconvenience. Please note that I can only display data for one element and one toposheet at a time.'
-#         else:
-#             for word in word_list:
-#                 pattern = r'\b{}\b'.format(re.escape(word))
-#                 if re.search(pattern, query.lower()):
-#                     if word == 'kriging':
-#                         return create_kriging_map_from_query(query, df,toposheet_numbers,elements)
-#                     elif word == 'idw':
-#                         return create_idw_map_from_query(query, df,toposheet_numbers,elements)
-#                     elif word in ['max','maximum']:
-#                         max_found = True
-#                     elif word in ['min','minimum']:
-#                         min_found = True
-#             if max_found and min_found:
-#                 return find_both_min_max(query, df,toposheet_numbers,elements)
-#             elif max_found:
-#                 return find_max_values(query, df,toposheet_numbers,elements)
-#             elif min_found:
-#                 return find_min_values(query, df,toposheet_numbers,elements)
-
 def process_subqueries(query, threshold_percentile):
     query = re.sub(r'\b(?:can|could|will|would|shall|should|may|might|must|to)\s+be\b', 'exists', query, flags=re.IGNORECASE)
 
@@ -948,21 +631,6 @@ def process_subqueries(query, threshold_percentile):
         elif min_found:
             return find_min_values(query, df,toposheet_numbers,elements)
 
-
-
-# OLD generate_geochemistry_response
-# def generate_geochemistry_response(query):
-#     corrected_sentence = correct_typos(query)
-#     Subqueries = split_query_smartly(corrected_sentence)
-#     response = process_subqueries(Subqueries)
-#     if response == None:
-#         response = "Sorry, I am unable to respond to this query. I am currently equipped to provide information on Nagpur Geochemistry Toposheet data and can handle one query at a time. Thank you for your understanding."
-#     data_type = "text"
-#     if type(response) == tuple and response[2]=='idw_map':
-#         data_type = "idw_map"
-#     elif type(response) == tuple and response[2]=='kriging_map':
-#         data_type = "kriging_map"
-#     return response, data_type
 
 def generate_geochemistry_response(query, threshold_percentile=100):
     corrected_sentence = correct_typos(query)
