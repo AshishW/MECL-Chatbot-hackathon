@@ -61,7 +61,6 @@ body {
 }
 
 .user-message {
-  background-color: #d3e3fd;
   background-color: #B5555A;
   color: f2f2f2;
   padding: 10px;
@@ -77,7 +76,6 @@ body {
 }
 
 .bot-message {
-  background-color: #f0f4f9;
   background-color: #F5DBD2;
   /* color: whitesmoke; */
   /* background-color: #e1edf9; */
@@ -187,7 +185,7 @@ body {
 
 /* adding regenerate-button class as per theme */
 .regenerate-button {
-  background-color: #ef2424; 
+  background-color: #bb3333; 
   color: #fdeaff;
   padding: 10px 20px;
   border: none;
@@ -203,7 +201,7 @@ body {
                -5px -5px 10px #f7f0ed;
 }
 .regenerate-button:hover {
-  background-color: #bb3333;
+  background-color: #ef2424;
 }
 /* Media Queries for Mobile Devices */
 @media only screen and (max-width: 600px) {
@@ -248,7 +246,6 @@ body {
 }
 
 .topic-button:hover {
-  background-color: #ccc3f7;
   background-color: #E19D95;
 }
 

@@ -140,21 +140,6 @@ def extract_topo_no(str1):
     return toposheet_numbers
 
 
-# OLD create_kriging_map_from_query(query, df)
-# def create_kriging_map_from_query(query,df):
-    t1 = extract_topo_no(query)
-    e1 = extract_chemicals(query)
-    
-    for toposheet_no in t1:
-        for element in e1:
-            max_value = df[element].max()
-            max_location = df[df[element] == max_value][['latitude', 'longitude']].iloc[0]
-            max_lat, max_lon = max_location['latitude'], max_location['longitude']
-            # Minimum value aur uske corresponding latitude, longitude find kar rahe hain
-            min_value = df[element].min()
-            min_location = df[df[element] == min_value][['latitude', 'longitude']].iloc[0]
-            min_lat, min_lon = min_location['latitude'], min_location['longitude']
-            return generate_kriging_map(df,element, toposheet_no)
 
 def create_kriging_map_from_query(query,df,toposheet_numbers,elements):    
 #     combined_krig_results = []
@@ -162,88 +147,6 @@ def create_kriging_map_from_query(query,df,toposheet_numbers,elements):
         for element in elements:
             return generate_kriging_map(df, element, toposheet_number)
 
-
-# OLD KRIGING CODE
-# def generate_kriging_map(df, element, max_value, max_location, max_lat, max_lon, min_value, min_location, min_lat, min_lon, toposheet_number=None, variogram_model='spherical'):
-#     # Function body goes here
-#      # Filter the DataFrame by the specified toposheet number if provided
-#     if toposheet_number is not None:
-#         df = df[df['toposheet'] == toposheet_number]
-    
-#     # Define grid resolution
-#     gridx = np.linspace(df['longitude'].min(), df['longitude'].max(), 100)
-#     gridy = np.linspace(df['latitude'].min(), df['latitude'].max(), 100)
-    
-#     # Perform Ordinary Kriging
-#     OK = OrdinaryKriging(df['longitude'], df['latitude'], df[element], variogram_model=variogram_model)
-#     z_interp, ss = OK.execute('grid', gridx, gridy)
-
-#     # Fill NaN values with the minimum value
-#     # fill_value = np.nanmin(z_interp.data) - 1
-#     # z_filled = np.nan_to_num(z_interp.data, nan=fill_value)
-    
-#     # Create the contour plot
-#     contour = go.Contour(
-#         z=z_interp.data,  # 2D array of the heatmap values
-#         x=gridx,  # X coordinates corresponding to 'z_interp'
-#         y=gridy,  # Y coordinates corresponding to 'z_interp'
-#         # contours=dict(
-#         # start=np.nanmin(z_interp.data),
-#         # end=np.nanmax(z_interp.data),
-#         # size=(np.nanmax(z_interp.data) - np.nanmin(z_interp.data)) / 10,
-#         # ),
-#         colorscale='YlOrRd',  # Match the colormap
-#         showscale=True  # Show the color scale bar
-#     )
-    
-#     # Create the scatter plot with hover annotations
-#     scatter = go.Scatter(
-#         x=df['longitude'],
-#         y=df['latitude'],
-#         mode='markers',
-#         marker=dict(
-#             color=df[element],
-#             colorscale='YlOrRd',  # Match the colormap
-#             showscale=False,  # We already have a color scale from the contour
-#             line=dict(color='black', width=1)  # Black border around the scatter points
-#         ),
-#         text=df[element],  # Text for hover annotations
-#         hoverinfo='text'  # Show only the text on hover
-#     )
-    
-#     # Create a figure and add the contour plot
-#     fig = go.Figure(data=[contour])
-    
-#     # Add the scatter plot on top of the contour plot
-#     # fig.add_trace(scatter)
-    
-#     fig.add_annotation(
-#     text=f"<i>Maximum value (in ppm): <b>{max_value}</b> at longitude <b>{max_lon}</b> and latitude <b>{max_lat}</b></i>",
-#     xref="paper", yref="paper",
-#     x=0.5, y=1.2, showarrow=False,
-#     font=dict(size=14),
-#     align="center"
-#     )
-
-#     fig.add_annotation(
-#     text=f"<i>Minimum value (in ppm): <b>{min_value}</b> at longitude <b>{min_lon}</b> and latitude <b>{min_lat}</b></i>",
-#     xref="paper", yref="paper",
-#     x=0.5, y=1.1, showarrow=False,
-#     font=dict(size=14),
-#     align="center"
-#     )
-
-#     # Add a title to the map
-#     fig.update_layout(
-#     title=f"<b>Stream Sediment samples showing {element} Values(ppm)</b>",
-#     title_x=0.5,  # Center the title
-#     title_y=0.95,  # Add some space from the top
-#     margin=dict(t=120)  # Adjust margin to accommodate the annotations and title
-#     )
-# #     fig.show()
-#     data = fig.to_dict()
-#     layout = fig.to_dict()
-#     return (data,layout, 'kriging_map')
 
 
 
@@ -273,7 +176,7 @@ def check_variance(z_interp, threshold=0.5):
     #     return False
 
 
-#NEW KRIGING CODE - EXP:
+
 def generate_kriging_map(df, element, toposheet_number, variogram_model='spherical'):
     # try printing the element, toposheet_number and variogram_model
 
@@ -286,21 +189,8 @@ def generate_kriging_map(df, element, toposheet_number, variogram_model='spheric
     # Define grid resolution
         gridx = np.linspace(df['longitude'].min(), df['longitude'].max(), 100)
         gridy = np.linspace(df['latitude'].min(), df['latitude'].max(), 100)
-        print("GRID X: \n", gridx)              
-        print("GRID Y: \n", gridy)
-        print("Longitude:", df['longitude'].values)
-        print("Latitude:", df['latitude'].values)
-        print("Element Values:", df[element].values)
-        print("Variogram Model:", variogram_model)
-    # Perform Ordinary Kriging
-        print("Data head:", df.head())
-        print("Data description:", df.describe())
-        print("Longitude range:", df['longitude'].min(), df['longitude'].max())
-        print("Latitude range:", df['latitude'].min(), df['latitude'].max())
         OK = OrdinaryKriging(df['longitude'], df['latitude'], df[element], variogram_model=variogram_model)
         z_interp, ss = OK.execute('grid', gridx, gridy)
-        print("Z Interpolated:", z_interp)
-        print("Semi-variance:", ss)
         is_blank_map = check_variance(z_interp)
         if is_blank_map:
             return f'Sorry for the inconvenience, the Kriging map of "{element}" for the requested toposheet number cannot be generated. Please stay tuned for updates'
@@ -450,14 +340,32 @@ def generate_idw_map(df, element, toposheet_number, threshold_percentile):
         )
 
         # Create the scatter plot for anomalies
+        # scatter = go.Scatter(
+        #     x=anomalies['longitude'],
+        #     y=anomalies['latitude'],
+        #     mode='markers',
+        #     marker=dict(color='red', size=5),
+        #     name='Anomalies'
+        # )        
         scatter = go.Scatter(
             x=anomalies['longitude'],
             y=anomalies['latitude'],
             mode='markers',
-            marker=dict(color='red', size=5),
-            name='Anomalies'
-        )        
-
+            marker=dict(
+                color='red',
+                size=5,
+                symbol='circle',
+                line=dict(width=1),
+                opacity=0.8,
+                colorscale='Viridis',
+                colorbar=dict(title='ppm'),
+                cmin=0,
+                cmax=max_value,
+                showscale=True
+            ),
+            name='Anomalies',
+            text=anomalies[element]
+        )
         # Add annotations for maximum and minimum values
         annotations = [
             dict(
