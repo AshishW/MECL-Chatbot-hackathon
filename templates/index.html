@@ -42,7 +42,7 @@
     let chatbotMode = "NGDR" //option "NGDR"/"RAG"
     const chatInput = document.querySelector('.query-input-txtbox');
     let currentUserQuery = null;
-    let currentMapId = null;
+    let currentMapId = '';
     let enable_input = false
     let currentTopic = null;
     let plotId = 0;
@@ -223,8 +223,8 @@ function getKrigingMap(map_data){
     'toImageButtonOptions': {
         'format': 'png', // one of png, svg, jpeg, webp
         'filename': 'custom_image',
-        'height': 1080,
-        'width': 1920,
+        'height': 720,
+        'width': 1080,
         'scale': 1  
       }
   } 
@@ -235,7 +235,6 @@ function getKrigingMap(map_data){
 
 function getIdwMap(map_data){
   const mapContainer = document.createElement('div');
-
   const thresholdInput = document.createElement('input');
   thresholdInput.setAttribute('type', 'number');
   thresholdInput.setAttribute('min', '0');
@@ -272,12 +271,13 @@ function getIdwMap(map_data){
         .then(data => {
           removeLoader();
           map_data = data[0][0]
+
           const config = {
             'toImageButtonOptions': {
                 'format': 'png', // one of png, svg, jpeg, webp
                 'filename': 'custom_image',
-                'height': 1080,
-                'width': 1920,
+                'height': 720,
+                'width': 1080,
                 'scale': 1  
               }
           }
@@ -296,16 +296,40 @@ function getIdwMap(map_data){
   appendMessage(mapContainer, false, isMap=true)
   appendMessage(thresholdControlContainer, false, isMap=true, containsElements=true)
   // appendMessage(txtFieldThreshold, false, isMap=true)
+  // map_data.layout.updatemenus = [{
+  //         buttons: [{
+  //           name: 'FullScreen',
+  //           method: 'relayout',
+  //           args: [{'visible': false}], // This argument is a placeholder and won't affect the layout
+  //           label: 'Full Screen'
+  //         }],
+  //         direction: 'left',
+  //         pad: {'r': 10, 't': 10},
+  //         showactive: false,
+  //         type: 'buttons',
+  //         x: 0.11,
+  //         xanchor: 'left',
+  //         y: 1.1,
+  //         yanchor: 'top'
+  //       }];
   const config = {
     'toImageButtonOptions': {
         'format': 'png', // one of png, svg, jpeg, webp
         'filename': 'custom_image',
-        'height': 1080,
-        'width': 1920,
+        'height': 720,
+        'width': 1080,
         'scale': 1  
       }
   } 
   Plotly.newPlot(`map-container-${plotId}`, map_data.data, map_data.layout, config);
+  // console.log(currentMapId)
+  // let menubtnList = document.querySelector('.updatemenu-container');
+
+// Add the event listener for the 'plotly_click' event
+// menubtnList.addEventListener('click', function() {
+//   console.log("Custom button clicked");
+//   openPlotlyMapInFullScreen();
+// });
   chatBox.scrollTop = chatBox.scrollHeight;
   plotId += 1;
 }
@@ -369,6 +393,37 @@ topicButtons.forEach(button => {
     }
   });
 });
+
+// function openPlotlyMapInFullScreen() {
+//   const plotElement = document.getElementById(`${currentMapId}`);
+  
+//   // Get the HTML for the Plotly map
+//   Plotly.toHtml(plotElement, { fullHtml: true })
+//   .then(function(htmlString) {
+//     // Open a new window for the full-screen interactive map
+//     const mapWindow = window.open('', 'PlotlyMapFullScreen');
+//     mapWindow.document.open();
+//     mapWindow.document.write(htmlString);
+//     mapWindow.document.close();
+//   });
+// }
+
+function openPlotlyMapInFullScreen() {
+  const plotElement = document.getElementById(currentMapId);
+  
+  // Assuming the plot has been created in 'plotElement'
+  const htmlString = plotElement.innerHTML; // Get the inner HTML of the plot container
+  
+  // Open a new window for the full-screen interactive map
+  const mapWindow = window.open('', 'PlotlyMapFullScreen');
+  mapWindow.document.open();
+  mapWindow.document.write(htmlString);
+  mapWindow.document.close();
+}
+// Add an event listener to your button or link
+// document.getElementById('your-button-id').addEventListener('click', function() {
+//   openPlotlyMapInFullScreen('your-plot-id');
+// });
 
   </script>
 </body>

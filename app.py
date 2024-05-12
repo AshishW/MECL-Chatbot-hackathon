@@ -100,9 +100,13 @@ def generate_response(user_query, topic):
   #    return "National Geoscience Data Repository (NGDR) is a flagship initiative conceptualised by Ministry of Mines as a part of National Mineral Exploration Policy (NMEP), 2016 for hosting all exploration related geoscientific data for dissemination to all the stakeholders so as to expedite, enhance and facilitate the exploration coverage of the country. Geological Survey of India is selected as the nodal agency for the implementation of NGDR. All legacy data of all stakeholders will be brought in to the system through digitization and all the exploration related data has been standardized through MERT (Mineral Exploration Reporting Template) and converted into GIS compatible formats for application of emerging technologies like AI and ML."
   # return "Thanks for your query! I'm still under development and learning to communicate effectively. Stay tuned for future updates!"
 
-
 @app.route("/")
 def home():
+    return render_template("home.html")
+
+
+@app.route("/chatbot")
+def home_chatbot():
   return render_template("index.html")
 import plotly.graph_objects as go
 

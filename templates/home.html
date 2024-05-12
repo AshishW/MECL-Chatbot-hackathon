@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Landing Page</title>
+    <style>
+        /* CSS styles go here */
+        html{
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        .intro-container {
+            max-width: 1200px;
+            margin-left: 20vw; /* Set the left margin to 30vw */
+            padding: 20px;
+            width: 50%;
+        }
+        .hero-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            /* make the linear gradient from an specific angle for background color*/
+            background:linear-gradient(242deg, rgb(79 221 255), rgb(0 17 99));
+            /* make the hero containers bottom part slanted */
+            clip-path: polygon(0 0, 100% 0, 100% 92%, 0 100%);
+            height: 80vh;
+        }
+        .img-container {
+            width: 50%;
+        }
+        .hero-image {
+            width: 60%;
+            height: 80%;
+            /* animation for hero-image */
+            animation: bounce-in-right 1s;
+        }
+        @keyframes bounce-in-right {
+            0% {
+                transform: translateX(100px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .intro-container h1 {
+            color: #fefdeb;
+            /* text-align: center; */
+            /* margin-top: 100px; */
+            font-size: 5.5rem;
+            margin-bottom: 0px;
+            /* add some entry animation or transition */
+            animation: slide-in 1s;
+
+        }
+        @keyframes slide-in {
+            0% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .intro-container p {
+            color: #9de8ff;
+            /* text-align: center; */
+            font-size: 3rem;
+            margin-top: 20px;
+            /* add some text reveal animation  */
+            animation: text-reveal 1s;
+        }
+        @keyframes text-reveal {
+            0% {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .btn-know-more {
+            display: inline-block;
+            padding: 15px 40px;
+            /* add background with linear gradient for this shade #00a4e3 */
+            background: linear-gradient(242deg, rgb(0 164 227), rgb(0 110 191));
+            color: #f2f2f2;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .try-pebble{
+            display: inline-block;
+            padding: 15px 40px;
+            /* add background with linear gradient for this shade #00a4e3 */
+            /* background: linear-gradient(349deg, rgb(255 62 29), rgb(161 52 0)); */
+            background: linear-gradient(242deg, rgb(0 249 136 / 81%), rgb(0 157 142));
+
+            color: #f2f2f2;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+            margin-left: 20px;
+        }
+        /* css for features section */
+        .features-container {
+            padding: 20px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .features {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 20px;
+        }
+        .feature-card {
+            width: 20%;
+            height: 40vh;
+            margin: 15px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            /* add some card effect animation */
+            animation: card-effect 1s;
+        }
+        @keyframes card-effect {
+            0% {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .feature-card h1 {
+            /* color: #007bff; */
+            text-align: center;
+            margin-top: 100px;
+        }
+        h3 {
+            color: #424242;
+            text-align: center;
+        }
+        .feature-card p {
+            /* style  the text look neat and clean like proper letter spacing etc */
+            letter-spacing: 1.5px;
+            line-height: 1.5;
+            font-size: 20px;
+            text-align: justify;
+            font-family:  sans-serif;
+            /* have equal increased padding from top and bottom */
+            padding: 10px 0;            
+            color: #003a77;
+        }
+        /* css for chatbot icon */
+        .chatbot-icon-container {
+            position: fixed;
+            bottom: 50px;
+            right: 30px;
+            /* small height and width for the image */
+            background: transparent;
+        }
+        .chatbot-image {
+            width: 100px;
+            height: 100px;
+            /* animate the chatbot-image with some infinite bouncy animation */
+            animation: bounce 3s infinite;
+            /* add some drop shadow to the chatbot image using filter property */
+            filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.1));
+            cursor: pointer;
+
+        }
+        .chatbot-image:hover {
+            transition: all 0.5s;
+            filter: drop-shadow(0 0 10px rgb(46, 144, 189));
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-20px);
+            }
+            60% {
+                transform: translateY(-15px);
+            }
+        }
+        /* css for tooltip */
+        .tooltip {
+            position: fixed;
+            bottom: 10px;
+            right: 20px;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            border-radius: 20px;
+            /* add some shadow to the tooltip */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            /* make the tooltip look like its message from the chatbot so use  something like that to make it look good */
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+
+    
+            /* add flashy color transition animtion to the tooltip */
+            animation: flash 1s infinite;
+        }
+        @keyframes flash {
+            0%, 50% {
+                background-color: #007bff;
+            }
+            51%, 100% {
+                background-color: #00a4e3;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero-container">
+        <div class="intro-container">
+            <h1>Pebble AI</h1>
+            <p>Explore. Discover. Analyze.</p>
+            <a href="#feature-section" class="btn-know-more">Know More</a>
+            <a href="/chatbot" class="try-pebble">Try Pebble AI</a>
+        </div>
+        <!-- add another conatiner containing an image from the static folder using flask syntax -->
+        <div class="img-container">
+            <img src="{{ url_for('static', filename='landing_bot.png') }}" alt="landing" class="hero-image">
+        </div>
+    </div>
+    <!-- Features section with heading "Key features" and with 3 cards properly aligned using flexbox with good looking UI (write css as well) -->
+    <div class="features-container" id="feature-section">
+        <h1>Key Features</h1>
+        <div class="features">
+            <div class="feature-card">
+                <h3>Geospatial Data Exploration</h3>
+                <p>Interact with geochemistry toposheet data through a user-friendly chat interface. Ask questions about specific locations, visualize spatial patterns, and generate interpolation maps using methods like kriging and inverse distance weighting.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Legal Insights</h3>
+                <p> Access information on relevant laws and acts, such as the Mines and Minerals (Development and Regulation) Act, 1957. Get answers to your legal queries and understand the regulations governing mineral exploration and extraction</p>
+            </div>
+            <div class="feature-card">
+                <h3>Accessibility</h3>
+                <p>No need for specialized GIS software or legal expertise. Pebble AI makes geospatial and legal information accessible to everyone through a simple and intuitive chat interface.</p>
+            </div>
+        </div>
+    </div>
+    <!-- add some small tooltip like message just above the chatbot-icon-container with text like "try Pebble AI" -->
+    <div class="tooltip">Try Pebble AI</div>
+    <!-- adding floating div container with an image of a chatbot which has fixed position at bottom right of the UI -->
+    <div class="chatbot-icon-container">
+        <img src="{{ url_for('static', filename='chatbot-icon.png') }}" alt="chatbot" class="chatbot-image">
+    </div>
+    <!-- write code such that when clicked on the chatbot-icon-container, the flask route will be changed to /chatbot -->
+    <script>
+        document.querySelector('.chatbot-icon-container').addEventListener('click', () => {
+            window.location.href = '/chatbot';
+        });
+    </script>
+</body>
+</html>
