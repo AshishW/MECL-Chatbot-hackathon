@@ -222,12 +222,13 @@ function getKrigingMap(map_data){
   // appendMessage(txtFieldThreshold, false, isMap=true)
   const config = {
     'toImageButtonOptions': {
-        'format': 'png', // one of png, svg, jpeg, webp
-        'filename': 'custom_image',
-        'height': 720,
-        'width': 1080,
-        'scale': 1  
-      }
+        'format': 'webp', // one of png, svg, jpeg, webp
+        'filename': 'kriging_plot',
+        // 'height': 720,
+        // 'width': 1080,
+        'scale': 3 
+      },
+      'displayLogo': false
   } 
   Plotly.newPlot(`map-container-${plotId}`, map_data.data, map_data.layout, config);
   chatBox.scrollTop = chatBox.scrollHeight;
@@ -275,12 +276,13 @@ function getIdwMap(map_data){
 
           const config = {
             'toImageButtonOptions': {
-                'format': 'png', // one of png, svg, jpeg, webp
-                'filename': 'custom_image',
-                'height': 720,
-                'width': 1080,
-                'scale': 1  
-              }
+                'format': 'webp', // one of png, svg, jpeg, webp
+                'filename': 'idw_plot',
+                // 'height': 720,
+                // 'width': 1080,
+                'scale': 3 
+              },
+              'displayLogo': false
           }
     Plotly.newPlot(`${currentMapId}`, map_data.data, map_data.layout, config);
   }).catch((error) => {
@@ -315,12 +317,13 @@ function getIdwMap(map_data){
   //       }];
   const config = {
     'toImageButtonOptions': {
-        'format': 'png', // one of png, svg, jpeg, webp
-        'filename': 'custom_image',
-        'height': 720,
-        'width': 1080,
-        'scale': 1  
-      }
+        'format': 'webp', // one of png, svg, jpeg, webp
+        'filename': 'idw_plot',
+        // 'height': 720,
+        // 'width': 1080,
+        'scale': 3  
+      },
+      'displayLogo': false
   } 
   Plotly.newPlot(`map-container-${plotId}`, map_data.data, map_data.layout, config);
   // console.log(currentMapId)
@@ -382,7 +385,8 @@ topicButtons.forEach(button => {
     if (enable_input){
       chatInput.disabled = false
       chatInput.placeholder = "Type your message here..."
-      chatInput.style.backgroundColor = "#e3f6ff"
+      // chatInput.style.backgroundColor = "#e3f6ff"
+      chatInput.style.backgroundColor = "#f2f2f2"
       chatInput.style.cursor = "text"
     }
     currentTopic = button.dataset.topic;

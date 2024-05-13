@@ -72,6 +72,7 @@ body {
 
 .user-message {
   background-color: #B5555A;
+  background: linear-gradient(45deg, #b55586, #a21ec1);
   color: f2f2f2;
   padding: 15px;
   border-radius: 5px;
@@ -88,7 +89,9 @@ body {
   /* background-color: #F5DBD2; */
   background-color: #cacfd5;
   background-color: #F0D3D3;
-  background: linear-gradient(45deg, #F0D3D3, #dd9e9e);
+  /* background: linear-gradient(45deg, #F0D3D3, #dd9e9e); */
+  background: linear-gradient(45deg, #daebff, #9ec7e5);
+
 
   /* color: whitesmoke; */
   /* background-color: #e1edf9; */
@@ -255,12 +258,11 @@ body {
 }
 
 .topic-button {
-  /* background-color: #cacfd5; */
-  background-color: #cacfd5d1;
-  /* background-color: #d3e3fd; */
+  /* background-color: #cacfd5d1; */
+  /* background-color: #ffa8d5b8; */
+  background: linear-gradient(45deg, #ffa8d5, #c997ff);
   color: #050505;
   padding: 20px 20px;
-  /* border: solid rgb(199, 139, 255); */
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -272,10 +274,13 @@ body {
              -5px -5px 10px #f2f2f2;
 }
 
+
 .topic-button:hover {
   /* background-color: #E19D95; */
   background-color: #959ee1;
-  background-color: linear-gradient(30deg, #959ee1, #a7aaff);
+  /* background-color: linear-gradient(30deg, #959ee1, #a7aaff); */
+  background: linear-gradient(120deg, #e499bf, #c997ff);
+
 }
 
 .dynamic-map-container {

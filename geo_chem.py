@@ -271,23 +271,6 @@ def generate_kriging_map(df, element, toposheet_number, variogram_model='spheric
 
 
 
-# OLD create_idw_map_from_query(query, df)
-# def create_idw_map_from_query(query,df):
-    t2 = extract_topo_no(query)
-    e2 = extract_chemicals(query)
-    threshold_percentile = 100   
-    for toposheet_number in t2:
-        for element in e2:
-            max_value = df[element].max()
-            max_location = df[df[element] == max_value][['latitude', 'longitude']].iloc[0]
-            max_lat, max_lon = max_location['latitude'], max_location['longitude']
-            # Minimum value aur uske corresponding latitude, longitude find kar rahe hain
-            min_value = df[element].min()
-            min_location = df[df[element] == min_value][['latitude', 'longitude']].iloc[0]
-            min_lat, min_lon = min_location['latitude'], min_location['longitude']
-            return generate_idw_map(df, element, toposheet_number, threshold_percentile) 
-            # return generate_idw_map(df, element,max_value, max_location, max_lat, max_lon, min_value, min_location, min_lat, min_lon, toposheet_number, threshold_percentile) 
-
 def create_idw_map_from_query(query,df,toposheet_numbers,elements, threshold_percentile):
 #     combined_idw_results = []
     for toposheet_number in toposheet_numbers:
@@ -388,6 +371,13 @@ def generate_idw_map(df, element, toposheet_number, threshold_percentile):
                 x=0.5, y=1.1, showarrow=False,
                 font=dict(size=14),
                 align="center"
+            ),
+            dict(
+                text=f"<b> Geochemical Anomaly for {element} Value(ppm)",
+                xref="paper", yref="paper",
+                x=0.09, y=-0.15, showarrow=False,
+                font=dict(size=12),
+                align="center"
             )
         ]
         
@@ -404,6 +394,32 @@ def generate_idw_map(df, element, toposheet_number, threshold_percentile):
 
         # Create the figure and plot it
         fig = go.Figure(data=[contour, scatter], layout=layout)
+        ranges = [
+            (anomalies[element].min(), anomalies[element].max())
+        ]
+        colors = ['Red']
+
+        # Calculate the number of ranges to determine the spacing
+        num_ranges = len(ranges)
+        height_per_rect = 0.08  # Adjust the height of each rectangle here
+        total_height = num_ranges * height_per_rect
+
+        # Add rectangles and annotations for the legend
+        for i, (lower, upper) in enumerate(ranges):
+            fig.add_shape(
+                type="rect",
+                xref="paper", yref="paper",
+                x0=0.1 + i * 0.05, y0=(-0.15) - (i + 1) * height_per_rect, x1=0.2 + i * 0.05, y1=(-0.15) - i * height_per_rect,
+                fillcolor=colors[i],
+                line=dict(width=0)
+            )
+            
+            fig.add_annotation(
+                x=0.21 + i * 0.05, y=(-0.19) - (i + 0.5) * height_per_rect,
+                text=f"{lower}-{upper}",
+                showarrow=False,
+                xref="paper", yref="paper"
+            )
 #         fig.show()
         data = fig.to_dict()
         layout = fig.to_dict()
