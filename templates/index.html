@@ -11,7 +11,7 @@
     <h2><span class="chatbot-title-heading">Pebble AI: </span><span class="chatbot-title-sub-heading">Explore. Discover. Analyze.</span></h2>
     <div class="chat-box">
       <div class="initial-greet-container">
-        <img src="{{ url_for('static', filename='bot.png') }}" class="profile-photo" style="margin-bottom:7rem ;">
+        <img src="{{ url_for('static', filename='chatbot-icon.png') }}" class="profile-photo" style="margin-bottom:6rem ;">
         <div class="sub_greet_container">
           <p class="bot-message">
             Hello and welcome! My name is Pebble, your dedicated AI assistant. I'm here to guide you through the intricacies of NGDR data & laws and regulations from the ministry of mines. What can I assist you with today?                                                                                              
@@ -65,6 +65,7 @@
       chatInput.placeholder = "Select a topic to continue conversation..."
       //set chatinput background as grey
       chatInput.style.backgroundColor = "#f2f2f2"
+      chatInput.style.cursor = "not-allowed"
     }
     // add logic such that the input is activated only when the button is clicked
     function appendMessage(message, isUser, isMap = false, containsElements = false) {
@@ -76,7 +77,7 @@
         messageElement.classList.add('user-message');
       }
       else{
-        profilePhoto.src = "{{ url_for('static', filename='bot.png') }}";
+        profilePhoto.src = "{{ url_for('static', filename='chatbot-icon.png') }}";
         messageElement.classList.add('bot-message');
       }
   
@@ -381,7 +382,8 @@ topicButtons.forEach(button => {
     if (enable_input){
       chatInput.disabled = false
       chatInput.placeholder = "Type your message here..."
-      chatInput.style.backgroundColor = "#ffffff"
+      chatInput.style.backgroundColor = "#e3f6ff"
+      chatInput.style.cursor = "text"
     }
     currentTopic = button.dataset.topic;
     suggestQuestions(currentTopic, button.textContent)

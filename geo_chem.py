@@ -336,17 +336,10 @@ def generate_idw_map(df, element, toposheet_number, threshold_percentile):
             x=np.linspace(min(gdf['longitude']), max(gdf['longitude']), 100),
             y=np.linspace(min(gdf['latitude']), max(gdf['latitude']), 100),
             colorscale='Viridis',
-            colorbar=dict(title='Deviation from Baseline')
+            colorbar=dict(title='Deviation from Baseline'),
+            showscale=False # Hide the color scale as we have a scatter plot
         )
-
-        # Create the scatter plot for anomalies
-        # scatter = go.Scatter(
-        #     x=anomalies['longitude'],
-        #     y=anomalies['latitude'],
-        #     mode='markers',
-        #     marker=dict(color='red', size=5),
-        #     name='Anomalies'
-        # )        
+       
         scatter = go.Scatter(
             x=anomalies['longitude'],
             y=anomalies['latitude'],
@@ -366,6 +359,20 @@ def generate_idw_map(df, element, toposheet_number, threshold_percentile):
             name='Anomalies',
             text=anomalies[element]
         )
+        # scatter = go.Scatter(
+        #     x=anomalies['longitude'],
+        #     y=anomalies['latitude'],
+        #     mode='markers',
+        #     marker=dict(
+        #         color='red',
+        #         size=5,
+        #         symbol='circle',
+        #         line=dict(width=1),
+        #         opacity=0.8,
+        #     ),
+        #     name='Anomalies',
+        #     text=anomalies[element]
+        # )
         # Add annotations for maximum and minimum values
         annotations = [
             dict(
@@ -386,6 +393,8 @@ def generate_idw_map(df, element, toposheet_number, threshold_percentile):
         
         # Define the layout with annotations
         layout = go.Layout(
+            width=720,
+            height=480,
             annotations=annotations,
             title=f"<b>Stream Sediment samples showing {element} Values in Toposheet {toposheet_number}</b>",
             title_x=0.5,
