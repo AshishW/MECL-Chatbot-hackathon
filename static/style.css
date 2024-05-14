@@ -47,6 +47,7 @@ body {
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  position: relative;
   /* backdrop-filter: blur(22px) saturate(169%); */
   /* -webkit-backdrop-filter: blur(22px) saturate(169%); */
   /* background-color: rgba(255, 255, 255, 0.63);
@@ -54,6 +55,27 @@ body {
   border: 1px solid rgba(209, 213, 219, 0.3); */
 }
 
+.about-link{
+  position: absolute;
+  right: 20px;
+  top: 30px;
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: bold;
+  /* background: linear-gradient(45deg, #aaa8a9, #d3d3d3); */
+  background:linear-gradient(45deg, #dedcff, #c4dbff);
+  padding: 10px 20px;
+  border-radius: 10px;
+}
+
+.about-link:hover{
+  background:linear-gradient(45deg, #dedcff, #ddebff);
+
+}
+.about-link a{
+  color: #7d38ff;
+  text-decoration: none;
+}
 
 .chat-box {
   background-color: #f2f2f2;
@@ -280,7 +302,6 @@ body {
   background-color: #959ee1;
   /* background-color: linear-gradient(30deg, #959ee1, #a7aaff); */
   background: linear-gradient(120deg, #e499bf, #c997ff);
-
 }
 
 .dynamic-map-container {
@@ -329,11 +350,11 @@ body {
   }
   50% {
     opacity: 1;
-    background: linear-gradient(to right,#F0D3D3, #dd9e9e); /* Gradient colors */
+    background: linear-gradient(to right,#daebff, #9ec7e5); /* Gradient colors */
   }
   100% {
     opacity: 1;
-    background-color: #F0D3D3; /* Final color */
+    background-color: #daebff; /* Final color */
   }
 }
 

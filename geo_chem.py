@@ -519,7 +519,7 @@ def find_both_min_max(query, df,toposheet_numbers,elements):
 
 def process_subqueries(query, threshold_percentile):
     query = re.sub(r'\b(?:can|could|will|would|shall|should|may|might|must|to)\s+be\b', 'exists', query, flags=re.IGNORECASE)
-
+    query = re.sub(r'\binverse\s+distance\s+weighted\b', 'idw', query, flags=re.IGNORECASE) # replace inverse distance weighted to idw
     word_list = ["kriging", "idw", "max", "min","maximum","minimum"]
     max_found = False
     min_found = False
@@ -527,7 +527,7 @@ def process_subqueries(query, threshold_percentile):
     df = Nagpur_gdf
     toposheet_numbers = extract_topo_no(query)
     elements = extract_elements(query)
-
+    print(query)
     print(toposheet_numbers,'\n')
     print(elements)
     if(len(toposheet_numbers) == 0 or len(elements) == 0) and (not len(toposheet_numbers) == len(elements)):
@@ -541,7 +541,7 @@ def process_subqueries(query, threshold_percentile):
     else:
         for word in word_list:
             pattern = r'\b{}\b'.format(re.escape(word))
-            if re.search(pattern, query.lower()):
+            if re.search(pattern, query, flags=re.IGNORECASE):
                 if word == 'kriging':
                     return create_kriging_map_from_query(query, df,toposheet_numbers,elements)
                 elif word == 'idw':
@@ -559,7 +559,8 @@ def process_subqueries(query, threshold_percentile):
 
 
 def generate_geochemistry_response(query, threshold_percentile=100):
-    corrected_sentence = correct_typos(query)
+    processed_sentence = correct_typos(query.lower())
+    corrected_sentence = processed_sentence.upper()
     response = process_subqueries(corrected_sentence, threshold_percentile)
     
     if response == None:

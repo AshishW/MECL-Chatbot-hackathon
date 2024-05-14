@@ -28,8 +28,12 @@
 |   |-- bot.png
 |   |-- user.png
 |   |-- bot.jpeg
+|   |-- landing_bot.png
+|   |-- chatbot-icon.png
 |-- templates/
 |   |-- index.html
+|   |-- home.html
+|   |-- about.html
 |-- readme.md
 ```
 

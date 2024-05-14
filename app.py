@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import os
 import re
 from geo_chem import generate_geochemistry_response
+import plotly.graph_objects as go
 import numpy as np
 import pandas as pd
 import json
@@ -108,7 +109,10 @@ def home():
 @app.route("/chatbot")
 def home_chatbot():
   return render_template("index.html")
-import plotly.graph_objects as go
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
 
 
 @app.route("/get_response_ngdr", methods=["POST"])
