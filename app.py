@@ -77,7 +77,7 @@ def generate_response(user_query, topic):
   rag_server_url = os.getenv('SERVER_URL')  # Get the server URL from the environment variables
   if (rag_server_url is None) or (rag_server_url == ""):
       return "The server URL is not set. Please set it in the environment variables."
-  response = requests.post(rag_server_url + '/chatbot', json={"query": user_query, "topic": topic})
+  response = requests.post(rag_server_url + '/chatbot', json={"query": user_query, "topic": topic}, verify=False)
   if response:
       response_json = response.json()
       if 'answer' in response_json:
