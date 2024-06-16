@@ -280,9 +280,8 @@ body {
 }
 
 .topic-button {
-  /* background-color: #cacfd5d1; */
-  /* background-color: #ffa8d5b8; */
-  background: linear-gradient(45deg, #ffa8d5, #c997ff);
+  /* background: linear-gradient(45deg, #ffa8d5, #c997ff); */
+  background: linear-gradient(45deg, #959ee196, #a7aaff);
   color: #050505;
   padding: 20px 20px;
   border: none;
@@ -323,6 +322,7 @@ body {
 .selected-btn{
   /* background-color: #E19D95; */
   background-color: #959ee1;
+  border: 1px solid black;
   background: linear-gradient(45deg, #959ee1, #a7aaff);
   box-shadow:  5px 5px 10px #d9d9d9,
              -5px -5px 10px #f2f2f2;
